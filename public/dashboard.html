@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 Dashboard - Matriz</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <span>🧠</span>
+                <span>Matriz</span>
+            </a>
+            <div class="nav-menu">
+                <a href="/">🏠 Home</a>
+                <a href="/dashboard.html" class="active">🤖 Dashboard</a>
+                <a href="/strategic-notes.html">📝 Notas</a>
+                <a href="/post.html">📋 Posts</a>
+                <a href="/logs-dashboard.html">📊 Logs</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>🤖 Dashboard IA</h1>
+        
+        <!-- AI Status -->
+        <div class="ai-section">
+            <h2>📊 Status da IA</h2>
+            <div id="ai-status" class="status-badge">Carregando...</div>
+        </div>
+
+        <!-- AI Chat -->
+        <div class="ai-section">
+            <h2>💬 Chat com IA</h2>
+            <form id="ai-form">
+                <div class="form-group">
+                    <label for="prompt">Sua pergunta:</label>
+                    <textarea id="prompt" name="prompt" class="form-control" rows="4" placeholder="Digite sua pergunta aqui..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">🤖 Perguntar à IA</button>
+            </form>
+            
+            <div id="ai-response" class="response-area d-none">
+                <div class="card mt-3">
+                    <h3>📝 Resposta da IA:</h3>
+                    <div id="response-content" class="ai-response-content mb-3"></div>
+                    <div id="response-rating" class="mt-3">
+                        <h4>Avaliar resposta:</h4>
+                        <div class="rating-stars" id="rating-stars">
+                            <span class="star" data-rating="1">⭐</span>
+                            <span class="star" data-rating="2">⭐</span>
+                            <span class="star" data-rating="3">⭐</span>
+                            <span class="star" data-rating="4">⭐</span>
+                            <span class="star" data-rating="5">⭐</span>
+                        </div>
+                        <div class="form-group mt-2">
+                            <textarea id="feedback" class="form-control" placeholder="Feedback opcional..." rows="2"></textarea>
+                        </div>
+                        <button id="submit-rating" class="btn btn-secondary">Enviar Avaliação</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Search -->
+        <div class="ai-section">
+            <h2>🔍 Buscar no Histórico</h2>
+            <form id="search-form">
+                <div class="form-group">
+                    <label for="search-query">Buscar conversas:</label>
+                    <div class="d-flex gap-2">
+                        <input type="text" id="search-query" class="form-control" placeholder="Digite sua busca..." required>
+                        <button type="submit" class="btn btn-secondary">🔍 Buscar</button>
+                    </div>
+                </div>
+            </form>
+            <div id="search-results" class="search-results mt-3"></div>
+        </div>
+
+        <!-- AI Chain -->
+        <div class="ai-section">
+            <h2>🔗 Cadeia de Blocos</h2>
+            <div id="ai-stats" class="ai-stats"></div>
+            <div id="ai-chain" class="ai-chain"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentResponseHash = null;
+        let aiChain = [];
+
+        // Carregar status da IA
+        async function loadAIStatus() {
+            try {
+                const response = await fetch('/api/ai/status');
+                const data = await response.json();
+                
+                const statusElement = document.getElementById('ai-status');
+                statusElement.textContent = `Status: ${data.status} | Modelo: ${data.model}`;
+                statusElement.className = `status-badge ${data.status === 'connected' ? 'success' : 'warning'}`;
+            } catch (error) {
+                console.error('Erro ao carregar status:', error);
+            }
+        }
+
+        // Enviar pergunta para IA
+        document.getElementById('ai-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const prompt = document.getElementById('prompt').value;
+            const submitBtn = e.target.querySelector('button');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = '🤖 Processando...';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/ai/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer mock-token'
+                    },
+                    body: JSON.stringify({ prompt })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Renderizar markdown se a biblioteca estiver disponível
+                    const responseContainer = document.getElementById('response-content');
+                    if (typeof marked !== 'undefined') {
+                        // Configurar marked para melhor renderização
+                        marked.setOptions({
+                            breaks: true,
+                            gfm: true,
+                            headerIds: false,
+                            mangle: false
+                        });
+                        responseContainer.innerHTML = marked.parse(data.answer);
+                    } else {
+                        // Fallback para texto simples com quebras de linha preservadas
+                        responseContainer.innerHTML = formatPlainTextResponse(data.answer);
+                    }
+                    
+                    document.getElementById('ai-response').classList.remove('d-none');
+                    document.getElementById('ai-response').classList.add('fade-in');
+                    currentResponseHash = data.hash;
+                    
+                    // Adicionar à cadeia
+                    aiChain.push({
+                        hash: data.hash,
+                        prompt: prompt,
+                        answer: data.answer,
+                        timestamp: Date.now(),
+                        aiMode: data.aiMode
+                    });
+                    
+                    // Atualizar cadeia
+                    loadAIChain();
+                    
+                    // Limpar formulário
+                    document.getElementById('prompt').value = '';
+                } else {
+                    alert('Erro: ' + data.msg);
+                }
+            } catch (error) {
+                alert('Erro ao comunicar com IA: ' + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Sistema de rating
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = this.dataset.rating;
+                document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+                document.querySelectorAll(`[data-rating="${rating}"]`).forEach(s => s.classList.add('active'));
+            });
+        });
+
+        // Enviar rating
+        document.getElementById('submit-rating').addEventListener('click', async () => {
+            if (!currentResponseHash) return;
+            
+            const activeStars = document.querySelectorAll('.star.active');
+            const rating = activeStars.length;
+            const feedback = document.getElementById('feedback').value;
+            
+            if (rating === 0) {
+                alert('Selecione uma avaliação');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/ai/${currentResponseHash}/rate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer mock-token'
+                    },
+                    body: JSON.stringify({ rating, feedback })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Avaliação enviada com sucesso!');
+                    document.getElementById('feedback').value = '';
+                    document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+                } else {
+                    alert('Erro: ' + data.msg);
+                }
+            } catch (error) {
+                alert('Erro ao enviar avaliação: ' + error.message);
+            }
+        });
+
+        // Buscar no histórico
+        document.getElementById('search-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const query = document.getElementById('search-query').value;
+            const resultsDiv = document.getElementById('search-results');
+            
+            try {
+                const response = await fetch(`/api/ai/search?query=${encodeURIComponent(query)}`, {
+                    headers: {
+                        'Authorization': 'Bearer mock-token'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultsDiv.innerHTML = `
+                        <div class="mb-3">
+                            <h3 style="color: #f1f5f9;">🔍 Resultados para "${query}"</h3>
+                            <p style="color: #94a3b8;">${data.total} resultado(s) encontrado(s)</p>
+                        </div>
+                        ${data.results.map(result => `
+                            <div class="chain-block">
+                                <div class="mb-2">
+                                    <strong style="color: #60a5fa;">💬 Pergunta:</strong> 
+                                    <span style="color: #e2e8f0;">${result.prompt}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong style="color: #4ade80;">🤖 Resposta:</strong>
+                                    <div class="ai-response-content" style="margin-top: 0.5rem; font-size: 0.9rem;">
+                                        ${renderChainContent(result.answer, 250)}
+                                    </div>
+                                </div>
+                                <div style="border-top: 1px solid rgba(148, 163, 184, 0.2); padding-top: 0.75rem; margin-top: 0.75rem;">
+                                    <small style="color: #94a3b8; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+                                        <span>🔗 ${result.hash.substring(0, 12)}...</span>
+                                        <span>🎯 ${result.aiMode}</span>
+                                    </small>
+                                </div>
+                            </div>
+                        `).join('')}
+                    `;
+                } else {
+                    resultsDiv.innerHTML = '<p>Erro na busca: ' + data.msg + '</p>';
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = '<p>Erro ao buscar: ' + error.message + '</p>';
+            }
+        });
+
+        // Carregar cadeia de blocos
+        async function loadAIChain() {
+            try {
+                const response = await fetch('/api/ai/chain', {
+                    headers: {
+                        'Authorization': 'Bearer mock-token'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Atualizar estatísticas
+                    const statsDiv = document.getElementById('ai-stats');
+                    statsDiv.innerHTML = `
+                        <div class="stat-card">
+                            <div class="stat-number">${data.stats.totalBlocks}</div>
+                            <div>Total de Blocos</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${data.stats.averageResponseLength}</div>
+                            <div>Média de Caracteres</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${Object.keys(data.stats.aiModeBreakdown).length}</div>
+                            <div>Modos IA</div>
+                        </div>
+                    `;
+                    
+                    // Atualizar cadeia
+                    const chainDiv = document.getElementById('ai-chain');
+                    if (data.chain.length > 0) {
+                        chainDiv.innerHTML = data.chain.map(block => `
+                            <div class="chain-block">
+                                <div class="mb-2">
+                                    <strong style="color: #60a5fa;">💬 Pergunta:</strong> 
+                                    <span style="color: #e2e8f0;">${block.prompt}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong style="color: #4ade80;">🤖 Resposta:</strong>
+                                    <div class="ai-response-content" style="margin-top: 0.5rem; font-size: 0.9rem;">
+                                        ${renderChainContent(block.answer, 300)}
+                                    </div>
+                                </div>
+                                <div style="border-top: 1px solid rgba(148, 163, 184, 0.2); padding-top: 0.75rem; margin-top: 0.75rem;">
+                                    <small style="color: #94a3b8; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+                                        <span>🔗 ${block.hash.substring(0, 12)}...</span>
+                                        <span>🎯 ${block.aiMode}</span>
+                                        <span>📅 ${new Date(block.ts).toLocaleString('pt-BR')}</span>
+                                    </small>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        chainDiv.innerHTML = '<div class="text-center p-4"><p style="color: #94a3b8;">📝 Nenhum bloco encontrado. Faça sua primeira pergunta!</p></div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar cadeia:', error);
+            }
+        }
+
+        // Função para formatar texto simples com quebras de linha
+        function formatPlainTextResponse(text) {
+            return text
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .split('</p><p>')
+                .map(p => `<p>${p}</p>`)
+                .join('');
+        }
+
+        // Função para renderizar conteúdo da cadeia com formatação
+        function renderChainContent(content, maxLength = 200) {
+            let formattedContent;
+            
+            if (typeof marked !== 'undefined') {
+                // Renderizar markdown e depois truncar
+                const fullHtml = marked.parse(content);
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = fullHtml;
+                const textContent = tempDiv.textContent || tempDiv.innerText || '';
+                
+                if (textContent.length > maxLength) {
+                    const truncated = content.substring(0, maxLength) + '...';
+                    formattedContent = marked.parse(truncated);
+                } else {
+                    formattedContent = fullHtml;
+                }
+            } else {
+                // Fallback para texto simples
+                const truncated = content.length > maxLength ? content.substring(0, maxLength) + '...' : content;
+                formattedContent = formatPlainTextResponse(truncated);
+            }
+            
+            return formattedContent;
+        }
+
+        // Inicializar
+        loadAIStatus();
+        loadAIChain();
+    </script>
+</body>
+</html> 

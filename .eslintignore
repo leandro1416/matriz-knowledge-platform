@@ -1,0 +1,9 @@
+node_modules/
+logs/
+cert/
+public/
+*.log
+*.tmp
+.env
+dist/
+build/

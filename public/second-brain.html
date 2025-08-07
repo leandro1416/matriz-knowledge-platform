@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 Second Brain - Matriz</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .brain-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .brain-hero {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 3rem 0;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(12px);
+        }
+
+        .brain-title {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .brain-subtitle {
+            font-size: 1.5rem;
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+        }
+
+        .brain-description {
+            font-size: 1.125rem;
+            color: #94a3b8;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
+        }
+
+        .brain-modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .brain-module {
+            background: rgba(30, 41, 59, 0.9);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(12px);
+            cursor: pointer;
+        }
+
+        .brain-module:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .module-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .module-title {
+            font-size: 1.5rem;
+            color: #f1f5f9;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .module-description {
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .module-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .module-features li {
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .module-features li::before {
+            content: "✓";
+            color: #4ade80;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .brain-workflow {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 20px;
+            padding: 3rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(12px);
+            margin-bottom: 4rem;
+        }
+
+        .workflow-title {
+            font-size: 2.5rem;
+            color: #f1f5f9;
+            text-align: center;
+            margin-bottom: 3rem;
+            font-weight: 600;
+        }
+
+        .workflow-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .workflow-step {
+            text-align: center;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .step-title {
+            color: #f1f5f9;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .step-description {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .brain-benefits {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 20px;
+            padding: 3rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(12px);
+        }
+
+        .benefits-title {
+            font-size: 2.5rem;
+            color: #f1f5f9;
+            text-align: center;
+            margin-bottom: 3rem;
+            font-weight: 600;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .benefit-icon {
+            font-size: 2rem;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .benefit-content h4 {
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+
+        .benefit-content p {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 4rem;
+            padding: 3rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border-radius: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .cta-title {
+            font-size: 2rem;
+            color: #f1f5f9;
+            margin-bottom: 1rem;
+        }
+
+        .cta-description {
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+            font-size: 1.125rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-cta {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-cta.primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-cta.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-cta.secondary {
+            background: rgba(51, 65, 85, 0.8);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .btn-cta.secondary:hover {
+            background: rgba(71, 85, 105, 0.9);
+            transform: translateY(-3px);
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .brain-title {
+                font-size: 2.5rem;
+            }
+            
+            .brain-modules {
+                grid-template-columns: 1fr;
+            }
+            
+            .workflow-steps {
+                grid-template-columns: 1fr;
+            }
+            
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-cta {
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
+            }
+        }
+
+        /* Animações */
+        .fade-in {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .fade-in-delay {
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu de Navegação -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <span>🧠</span>
+                <span>Matriz</span>
+            </a>
+            
+            <div class="nav-menu">
+                <a href="/">🏠 Home</a>
+                <a href="/admin-dashboard.html">👑 Admin</a>
+                <a href="/dashboard.html">🤖 IA</a>
+                <a href="/second-brain.html" class="active">🧠 Second Brain</a>
+                <a href="/strategic-notes.html">📝 Notas</a>
+                <a href="/logs-dashboard.html">📊 Logs</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+        <div class="brain-container">
+            <!-- Hero Section -->
+            <div class="brain-hero fade-in">
+                <h1 class="brain-title">🧠 Second Brain</h1>
+                <p class="brain-subtitle">Seu Segundo Cérebro Digital</p>
+                <p class="brain-description">
+                    Transforme a Matriz em seu segundo cérebro - um sistema inteligente que captura, organiza e conecta suas ideias, 
+                    criando uma rede de conhecimento que cresce com você. Potencialize sua capacidade de pensar, aprender e criar.
+                </p>
+            </div>
+
+            <!-- Módulos do Second Brain -->
+            <div class="brain-modules fade-in-delay">
+                <div class="brain-module" onclick="location.href='/dashboard.html'">
+                    <span class="module-icon">🤖</span>
+                    <h3 class="module-title">AI Assistant</h3>
+                    <p class="module-description">
+                        Seu assistente pessoal de IA para análises, resumos e insights instantâneos sobre qualquer tópico.
+                    </p>
+                    <ul class="module-features">
+                        <li>Análise inteligente de conteúdo</li>
+                        <li>Geração de insights personalizados</li>
+                        <li>Conexões entre ideias</li>
+                        <li>Resumos automáticos</li>
+                    </ul>
+                </div>
+
+                <div class="brain-module" onclick="location.href='/strategic-notes.html'">
+                    <span class="module-icon">📝</span>
+                    <h3 class="module-title">Knowledge Base</h3>
+                    <p class="module-description">
+                        Sistema avançado de notas que funciona como uma extensão do seu cérebro, organizando e conectando informações.
+                    </p>
+                    <ul class="module-features">
+                        <li>Notas estratégicas interconectadas</li>
+                        <li>Tags e categorização inteligente</li>
+                        <li>Busca semântica avançada</li>
+                        <li>Sincronização com Obsidian</li>
+                    </ul>
+                </div>
+
+                <div class="brain-module" onclick="location.href='/admin-dashboard.html'">
+                    <span class="module-icon">🔗</span>
+                    <h3 class="module-title">Connection Hub</h3>
+                    <p class="module-description">
+                        Centro de conexões que mapeia relações entre ideias, criando uma rede neural digital do seu conhecimento.
+                    </p>
+                    <ul class="module-features">
+                        <li>Mapeamento de conexões</li>
+                        <li>Análise de padrões</li>
+                        <li>Descoberta de insights ocultos</li>
+                        <li>Visualização de relacionamentos</li>
+                    </ul>
+                </div>
+
+                <div class="brain-module">
+                    <span class="module-icon">💡</span>
+                    <h3 class="module-title">Insight Engine</h3>
+                    <p class="module-description">
+                        Motor de insights que analisa seu conhecimento acumulado para gerar novas ideias e conexões inovadoras.
+                    </p>
+                    <ul class="module-features">
+                        <li>Geração automática de insights</li>
+                        <li>Sugestões de conexões</li>
+                        <li>Identificação de gaps</li>
+                        <li>Recomendações personalizadas</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Workflow do Second Brain -->
+            <div class="brain-workflow fade-in-delay">
+                <h2 class="workflow-title">Como Funciona Seu Second Brain</h2>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <h3 class="step-title">Capture</h3>
+                        <p class="step-description">
+                            Capture ideias, insights e informações importantes de qualquer fonte - conversas, artigos, experiências.
+                        </p>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <h3 class="step-title">Organize</h3>
+                        <p class="step-description">
+                            A IA organiza automaticamente suas informações, criando tags, categorias e conexões inteligentes.
+                        </p>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <h3 class="step-title">Connect</h3>
+                        <p class="step-description">
+                            O sistema identifica padrões e conecta ideias relacionadas, criando uma rede de conhecimento.
+                        </p>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <h3 class="step-title">Create</h3>
+                        <p class="step-description">
+                            Use insights gerados para criar novo conteúdo, tomar decisões e desenvolver projetos inovadores.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Benefícios -->
+            <div class="brain-benefits fade-in-delay">
+                <h2 class="benefits-title">Benefícios do Second Brain</h2>
+                <div class="benefits-grid">
+                    <div class="benefit-item">
+                        <span class="benefit-icon">🎯</span>
+                        <div class="benefit-content">
+                            <h4>Foco Aprimorado</h4>
+                            <p>Libere sua mente para tarefas criativas enquanto o sistema gerencia suas informações automaticamente.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">⚡</span>
+                        <div class="benefit-content">
+                            <h4>Produtividade Máxima</h4>
+                            <p>Acesse qualquer informação instantaneamente e gere insights em segundos, não horas.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">🧩</span>
+                        <div class="benefit-content">
+                            <h4>Conexões Inovadoras</h4>
+                            <p>Descubra relacionamentos ocultos entre ideias que levam a soluções criativas e inovadoras.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">📈</span>
+                        <div class="benefit-content">
+                            <h4>Crescimento Contínuo</h4>
+                            <p>Seu conhecimento cresce exponencialmente conforme o sistema aprende e evolui com você.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="cta-section fade-in-delay">
+                <h2 class="cta-title">Pronto para Potencializar Sua Mente?</h2>
+                <p class="cta-description">
+                    Comece a construir seu segundo cérebro hoje e transforme a forma como você pensa, aprende e cria.
+                </p>
+                <div class="cta-buttons">
+                    <a href="/dashboard.html" class="btn-cta primary">
+                        <span>🚀</span>
+                        <span>Começar Agora</span>
+                    </a>
+                    <a href="/strategic-notes.html" class="btn-cta secondary">
+                        <span>📝</span>
+                        <span>Explorar Notas</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Animações de scroll
+        function setupScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observar elementos para animação
+            document.querySelectorAll('.brain-module, .workflow-step, .benefit-item').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        }
+
+        // Efeitos de hover nos módulos
+        document.querySelectorAll('.brain-module').forEach(module => {
+            module.addEventListener('mouseenter', () => {
+                module.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            
+            module.addEventListener('mouseleave', () => {
+                module.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Inicializar quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', () => {
+            setupScrollAnimations();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📝 Notas Estratégicas - Matriz</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <!-- Menu de Navegação -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <span>🧠</span>
+                <span>Matriz</span>
+            </a>
+            
+            <div class="nav-menu">
+                <a href="/">🏠 Home</a>
+                <a href="/dashboard.html">🤖 Dashboard</a>
+                <a href="/strategic-notes.html" class="active">📝 Notas</a>
+                <a href="/post.html">📋 Posts</a>
+                <a href="/logs-dashboard.html">📊 Logs</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="text-center mb-4">
+            <h1>📝 Notas Estratégicas</h1>
+            <p class="opacity-90">Organize suas ideias e estratégias com clareza</p>
+        </div>
+
+        <!-- Formulário de criação -->
+        <div class="section">
+            <h3>➕ Criar Nova Nota</h3>
+            <form id="noteForm">
+                <div class="form-group">
+                    <label for="title">Título da Nota</label>
+                    <input type="text" id="title" name="title" class="form-control" placeholder="Digite o título da sua nota..." required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="content">Conteúdo</label>
+                    <textarea id="content" name="content" class="form-control" rows="6" placeholder="Descreva sua ideia estratégica..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" name="status" class="form-control" required>
+                        <option value="draft">📝 Rascunho</option>
+                        <option value="active">⚡ Ativo</option>
+                        <option value="completed">✅ Concluído</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">📤 Salvar Nota</button>
+            </form>
+        </div>
+
+        <!-- Filtros -->
+        <div class="section">
+            <h3>🔍 Filtrar Notas</h3>
+            <div class="d-flex gap-2" style="flex-wrap: wrap;">
+                <button class="btn btn-secondary filter-btn active" data-filter="all">Todas</button>
+                <button class="btn btn-secondary filter-btn" data-filter="draft">📝 Rascunhos</button>
+                <button class="btn btn-secondary filter-btn" data-filter="active">⚡ Ativas</button>
+                <button class="btn btn-secondary filter-btn" data-filter="completed">✅ Concluídas</button>
+            </div>
+        </div>
+
+        <!-- Lista de notas -->
+        <div class="section">
+            <h3>📋 Suas Notas</h3>
+            <div id="notesGrid" class="grid grid-2">
+                <div class="card text-center">
+                    <div class="loading"></div>
+                    <p class="mt-2">Carregando notas...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class StrategicNotesManager {
+            constructor() {
+                this.currentFilter = 'all';
+                this.init();
+            }
+
+            init() {
+                this.setupForm();
+                this.setupFilters();
+                this.loadNotes();
+            }
+
+            setupForm() {
+                const form = document.getElementById('noteForm');
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.createNote();
+                });
+            }
+
+            setupFilters() {
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        
+                        this.currentFilter = btn.getAttribute('data-filter');
+                        this.loadNotes();
+                    });
+                });
+            }
+
+            async createNote() {
+                const formData = new FormData(document.getElementById('noteForm'));
+                const noteData = {
+                    title: formData.get('title'),
+                    content: formData.get('content'),
+                    status: formData.get('status')
+                };
+
+                try {
+                    const response = await fetch('/api/strategic-notes', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(noteData)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        this.showMessage('✅ Nota criada com sucesso!', 'success');
+                        document.getElementById('noteForm').reset();
+                        this.loadNotes();
+                    } else {
+                        this.showMessage('❌ Erro ao criar nota: ' + (result.message || 'Erro desconhecido'), 'error');
+                    }
+                } catch (error) {
+                    this.showMessage('🔌 Erro de conexão: ' + error.message, 'error');
+                }
+            }
+
+            async loadNotes() {
+                try {
+                    const response = await fetch('/api/strategic-notes');
+                    const data = await response.json();
+                    
+                    this.renderNotes(data.notes || []);
+                } catch (error) {
+                    this.renderError('Erro ao carregar notas: ' + error.message);
+                }
+            }
+
+            renderNotes(notes) {
+                const container = document.getElementById('notesGrid');
+                
+                // Filtrar notas se necessário
+                const filteredNotes = this.currentFilter === 'all' 
+                    ? notes 
+                    : notes.filter(note => note.status === this.currentFilter);
+                
+                if (filteredNotes.length === 0) {
+                    container.innerHTML = `
+                        <div class="card text-center">
+                            <h4>📝 Nenhuma nota encontrada</h4>
+                            <p class="opacity-75">Crie sua primeira nota estratégica!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = filteredNotes.map(note => `
+                    <div class="card note-card" data-status="${note.status}">
+                        <div class="d-flex justify-between align-center mb-2">
+                            <h4 class="note-title">${note.title}</h4>
+                            <span class="status-badge ${this.getStatusClass(note.status)}">${this.getStatusText(note.status)}</span>
+                        </div>
+                        <p class="note-content mb-3 opacity-90">${note.content.length > 150 ? note.content.substring(0, 150) + '...' : note.content}</p>
+                        <div class="d-flex justify-between align-center">
+                            <small class="opacity-75">📅 ${new Date(note.createdAt).toLocaleDateString('pt-BR')}</small>
+                            <div class="d-flex gap-1">
+                                <button class="btn btn-secondary" onclick="notesManager.editNote('${note._id}')" title="Editar">✏️</button>
+                                <button class="btn btn-danger" onclick="notesManager.deleteNote('${note._id}')" title="Excluir">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            renderError(message) {
+                const container = document.getElementById('notesGrid');
+                container.innerHTML = `
+                    <div class="card">
+                        <div class="alert alert-error">
+                            <h4>❌ Erro</h4>
+                            <p>${message}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            getStatusClass(status) {
+                const classes = {
+                    'draft': 'warning',
+                    'active': 'success',
+                    'completed': 'success'
+                };
+                return classes[status] || 'warning';
+            }
+
+            getStatusText(status) {
+                const texts = {
+                    'draft': '📝 Rascunho',
+                    'active': '⚡ Ativo',
+                    'completed': '✅ Concluído'
+                };
+                return texts[status] || status;
+            }
+
+            async editNote(noteId) {
+                // Implementar edição (modal ou redirecionamento)
+                this.showMessage('🔧 Funcionalidade de edição em desenvolvimento', 'info');
+            }
+
+            async deleteNote(noteId) {
+                if (!confirm('🗑️ Tem certeza que deseja excluir esta nota?\nEsta ação não pode ser desfeita.')) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/strategic-notes/${noteId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        this.showMessage('✅ Nota excluída com sucesso!', 'success');
+                        this.loadNotes();
+                    } else {
+                        const result = await response.json();
+                        this.showMessage('❌ Erro ao excluir nota: ' + (result.message || 'Erro desconhecido'), 'error');
+                    }
+                } catch (error) {
+                    this.showMessage('🔌 Erro de conexão: ' + error.message, 'error');
+                }
+            }
+
+            showMessage(message, type) {
+                // Remover mensagens anteriores
+                document.querySelectorAll('.temp-message').forEach(el => el.remove());
+                
+                const div = document.createElement('div');
+                div.className = `alert alert-${type} temp-message fade-in`;
+                div.innerHTML = `<p>${message}</p>`;
+                
+                const container = document.querySelector('.container');
+                container.insertBefore(div, container.firstElementChild.nextElementSibling);
+                
+                // Remover após 5 segundos
+                setTimeout(() => {
+                    div.style.opacity = '0';
+                    setTimeout(() => div.remove(), 300);
+                }, 5000);
+            }
+        }
+
+        // Inicializar quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', () => {
+            window.notesManager = new StrategicNotesManager();
+        });
+    </script>
+</body>
+</html>

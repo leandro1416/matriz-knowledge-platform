@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 Matriz - Plataforma de Conhecimento</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .hero-container {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.375rem;
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .hero-description {
+            font-size: 1.125rem;
+            color: #94a3b8;
+            margin-bottom: 3rem;
+            line-height: 1.7;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .status-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+            backdrop-filter: blur(8px);
+        }
+
+        .hero-badge.secure {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .hero-badge.fast {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border-color: rgba(245, 158, 11, 0.3);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-bottom: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero {
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 180px;
+            justify-content: center;
+        }
+
+        .btn-hero.primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: #ffffff;
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-hero.primary:hover {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-hero.secondary {
+            background: rgba(51, 65, 85, 0.8);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            backdrop-filter: blur(8px);
+        }
+
+        .btn-hero.secondary:hover {
+            background: rgba(71, 85, 105, 0.9);
+            color: #f1f5f9;
+            border-color: rgba(148, 163, 184, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .features-section {
+            margin-top: 5rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border-color: rgba(148, 163, 184, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-card h3 {
+            color: #f1f5f9;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #cbd5e1;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .stats-section {
+            margin-top: 5rem;
+            padding: 3rem 0;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(12px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #3b82f6;
+            text-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .main-content {
+            min-height: calc(100vh - 120px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.75rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.125rem;
+            }
+
+            .hero-description {
+                font-size: 1rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+            
+            .btn-hero {
+                width: 100%;
+                max-width: 280px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .feature-card {
+                padding: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+
+            .hero-container {
+                padding: 2rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2.25rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-badges {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.75rem;
+            }
+
+            .feature-icon {
+                font-size: 2.75rem;
+            }
+        }
+
+        /* Animações */
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .fade-in-up-delay {
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .fade-in-up-delay-2 {
+            animation: fadeInUp 1.2s ease-out 0.4s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Efeito de partículas no fundo */
+        .hero-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(34, 197, 94, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu de Navegação -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <span>🧠</span>
+                <span>Matriz</span>
+            </a>
+            
+            <div class="nav-menu">
+                <a href="/" class="active">🏠 Home</a>
+                <a href="/admin-dashboard.html">👑 Admin</a>
+                <a href="/dashboard.html">🤖 IA</a>
+                <a href="/second-brain.html">🧠 Second Brain</a>
+                <a href="/strategic-notes.html">📝 Notas</a>
+                <a href="/logs-dashboard.html">📊 Logs</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+        <div class="container">
+            <div class="hero-container">
+                <h1 class="hero-title fade-in-up">Matriz</h1>
+                <p class="hero-subtitle fade-in-up-delay">
+                    Plataforma Inteligente de Conhecimento
+                </p>
+                <p class="hero-description fade-in-up-delay">
+                    Uma plataforma avançada que conecta ideias, organiza conhecimento e potencializa sua produtividade através de inteligência artificial e ferramentas colaborativas.
+                </p>
+                
+                <div class="status-badges fade-in-up-delay">
+                    <span class="hero-badge">
+                        <span>✅</span>
+                        <span>Sistema Online</span>
+                    </span>
+                    <span class="hero-badge secure">
+                        <span>🔒</span>
+                        <span>100% Seguro</span>
+                    </span>
+                    <span class="hero-badge fast">
+                        <span>⚡</span>
+                        <span>Ultra Rápido</span>
+                    </span>
+                </div>
+
+                <div class="action-buttons fade-in-up-delay-2">
+                    <a href="/second-brain.html" class="btn-hero primary">
+                        <span>🧠</span>
+                        <span>Second Brain</span>
+                    </a>
+                    <a href="/dashboard.html" class="btn-hero secondary">
+                        <span>🤖</span>
+                        <span>Chat IA</span>
+                    </a>
+                    <a href="/admin-dashboard.html" class="btn-hero secondary">
+                        <span>👑</span>
+                        <span>Painel Admin</span>
+                    </a>
+                </div>
+
+                <!-- Estatísticas -->
+                <div class="stats-section fade-in-up-delay-2">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-number" id="aiResponses">150+</span>
+                            <div class="stat-label">Respostas IA</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="notesCreated">45+</span>
+                            <div class="stat-label">Notas Criadas</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="uptime">99.9%</span>
+                            <div class="stat-label">Uptime</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="responseTime">&lt;1s</span>
+                            <div class="stat-label">Resp. Média</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Features -->
+            <div class="features-section">
+                <div class="text-center mb-4">
+                    <h2>🚀 Recursos Principais</h2>
+                    <p class="opacity-90">Descubra o que torna a Matriz especial</p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card" style="border: 2px solid rgba(59, 130, 246, 0.5); background: rgba(59, 130, 246, 0.05); cursor: pointer;" onclick="location.href='/second-brain.html'">
+                        <span class="feature-icon">🧠</span>
+                        <h3>Second Brain</h3>
+                        <p>Transforme a Matriz em seu segundo cérebro digital - capturando, organizando e conectando suas ideias para potencializar sua capacidade de pensar e criar.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <span class="feature-icon">🤖</span>
+                        <h3>Inteligência Artificial</h3>
+                        <p>Sistema integrado com OpenAI GPT-4 para análises avançadas, geração de conteúdo e insights inteligentes sobre suas informações.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <span class="feature-icon">📝</span>
+                        <h3>Notas Estratégicas</h3>
+                        <p>Organize suas ideias com um sistema avançado de notas que permite categorização, busca inteligente e colaboração em tempo real.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <span class="feature-icon">🔒</span>
+                        <h3>Segurança Avançada</h3>
+                        <p>Proteção de dados com HTTPS, autenticação robusta e criptografia de ponta a ponta para manter suas informações seguras.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <span class="feature-icon">⚡</span>
+                        <h3>Performance Otimizada</h3>
+                        <p>Interface responsiva e rápida, otimizada para todos os dispositivos com carregamento instantâneo e experiência fluida.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <span class="feature-icon">📊</span>
+                        <h3>Analytics Detalhado</h3>
+                        <p>Dashboard completo com métricas em tempo real, logs detalhados e insights sobre o uso da plataforma.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <span class="feature-icon">🌐</span>
+                        <h3>Multiplataforma</h3>
+                        <p>Acesse de qualquer lugar, em qualquer dispositivo. Interface adaptativa que funciona perfeitamente em desktop, tablet e mobile.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Animação dos números das estatísticas
+        function animateNumbers() {
+            const elements = [
+                { id: 'aiResponses', start: 0, end: 150, suffix: '+', duration: 2000 },
+                { id: 'notesCreated', start: 0, end: 45, suffix: '+', duration: 1500 },
+                { id: 'uptime', start: 95, end: 99.9, suffix: '%', duration: 2500, decimal: 1 },
+                { id: 'responseTime', start: 0, end: 1, suffix: 's', duration: 1800, prefix: '<' }
+            ];
+
+            elements.forEach(({ id, start, end, suffix, duration, decimal = 0, prefix = '' }) => {
+                const element = document.getElementById(id);
+                const startTime = performance.now();
+                
+                function updateNumber(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Easing function para suavizar a animação
+                    const easeProgress = 1 - Math.pow(1 - progress, 3);
+                    
+                    const current = start + (end - start) * easeProgress;
+                    const displayValue = decimal > 0 ? current.toFixed(decimal) : Math.floor(current);
+                    
+                    element.textContent = `${prefix}${displayValue}${suffix}`;
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(updateNumber);
+                    }
+                }
+                
+                requestAnimationFrame(updateNumber);
+            });
+        }
+
+        // Verificar status do sistema em tempo real
+        async function checkSystemStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                if (data.ok) {
+                    // Atualizar badges se necessário
+                    console.log('✅ Sistema funcionando normalmente');
+                }
+            } catch (error) {
+                console.log('⚠️ Verificação de status falhou:', error.message);
+            }
+        }
+
+        // Intersection Observer para animações
+        function setupScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                        
+                        // Animar números quando a seção de stats for visível
+                        if (entry.target.classList.contains('stats-section')) {
+                            animateNumbers();
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            // Observar elementos que devem ser animados
+            document.querySelectorAll('.feature-card, .stats-section').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        }
+
+        // Inicializar quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', () => {
+            setupScrollAnimations();
+            checkSystemStatus();
+            
+            // Verificar status periodicamente
+            setInterval(checkSystemStatus, 30000); // A cada 30 segundos
+        });
+
+        // Adicionar efeito de hover nos botões
+        document.querySelectorAll('.btn-hero').forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                btn.style.transform = 'translateY(-3px) scale(1.02)';
+            });
+            
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

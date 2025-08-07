@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Logs Dashboard - Matriz</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .logs-dashboard {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 120px);
+        }
+
+        .logs-sidebar {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(12px);
+            height: fit-content;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .logs-main {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section h3 {
+            color: #f1f5f9;
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(51, 65, 85, 0.6);
+            border-radius: 8px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .status-online { background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
+        .status-offline { background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.5); }
+        .status-warning { background: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
+
+        .status-text {
+            color: #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .performance-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .performance-item {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .performance-label {
+            color: #cbd5e1;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .performance-value {
+            color: #f1f5f9;
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .refresh-btn {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(8px);
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #3b82f6;
+            text-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #cbd5e1;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .logs-section {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(12px);
+        }
+
+        .logs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .logs-filters {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+            color: #e0e7ff;
+        }
+
+        .logs-list {
+            max-height: 500px;
+            overflow-y: auto;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .log-item {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: background 0.2s ease;
+        }
+
+        .log-item:hover {
+            background: rgba(51, 65, 85, 0.3);
+        }
+
+        .log-item:last-child {
+            border-bottom: none;
+        }
+
+        .log-level {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .level-info {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .level-success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .level-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .level-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .log-time {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            min-width: 100px;
+            font-family: monospace;
+        }
+
+        .log-message {
+            flex: 1;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 1024px) {
+            .logs-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .logs-sidebar {
+                order: 2;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .logs-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .logs-filters {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .log-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .log-time {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu de Navegação -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <span>🧠</span>
+                <span>Matriz</span>
+            </a>
+            
+            <div class="nav-menu">
+                <a href="/">🏠 Home</a>
+                <a href="/dashboard.html">🤖 Dashboard</a>
+                <a href="/strategic-notes.html">📝 Notas</a>
+                <a href="/post.html">📋 Posts</a>
+                <a href="/logs-dashboard.html" class="active">📊 Logs</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="text-center mb-4">
+            <h1>📊 Logs Dashboard</h1>
+            <p class="opacity-90">Monitoramento em tempo real do sistema</p>
+        </div>
+
+        <div class="logs-dashboard">
+            <!-- Sidebar -->
+            <div class="logs-sidebar">
+                <div class="sidebar-section">
+                    <h3>🔋 Status do Sistema</h3>
+                    <div class="status-indicator">
+                        <span class="status-dot status-online"></span>
+                        <span class="status-text">Servidor Online</span>
+                    </div>
+                    <div class="status-indicator">
+                        <span class="status-dot status-online"></span>
+                        <span class="status-text">MongoDB Conectado</span>
+                    </div>
+                    <div class="status-indicator">
+                        <span class="status-dot status-online"></span>
+                        <span class="status-text">IA Funcionando</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>⚡ Performance</h3>
+                    <div class="performance-grid">
+                        <div class="performance-item">
+                            <div class="performance-label">CPU</div>
+                            <div class="performance-value" id="cpuUsage">15%</div>
+                        </div>
+                        <div class="performance-item">
+                            <div class="performance-label">RAM</div>
+                            <div class="performance-value" id="ramUsage">45%</div>
+                        </div>
+                        <div class="performance-item">
+                            <div class="performance-label">Uptime</div>
+                            <div class="performance-value" id="uptime">2h 30m</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary refresh-btn" onclick="logsManager.refreshAll()">
+                    🔄 Atualizar Tudo
+                </button>
+            </div>
+
+            <!-- Main Content -->
+            <div class="logs-main">
+                <!-- Estatísticas -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-icon">📝</span>
+                        <div class="stat-value" id="totalLogs">0</div>
+                        <div class="stat-label">Total de Logs</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">✅</span>
+                        <div class="stat-value" id="successLogs">0</div>
+                        <div class="stat-label">Sucessos</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">⚠️</span>
+                        <div class="stat-value" id="warningLogs">0</div>
+                        <div class="stat-label">Avisos</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">❌</span>
+                        <div class="stat-value" id="errorLogs">0</div>
+                        <div class="stat-label">Erros</div>
+                    </div>
+                </div>
+
+                <!-- Logs Section -->
+                <div class="logs-section">
+                    <div class="logs-header">
+                        <h3>📋 Logs Recentes</h3>
+                        <button class="btn btn-secondary" onclick="logsManager.refreshLogs()">
+                            🔄 Atualizar
+                        </button>
+                    </div>
+                    
+                    <div class="logs-filters">
+                        <button class="btn btn-secondary filter-btn active" data-level="all">📚 Todos</button>
+                        <button class="btn btn-secondary filter-btn" data-level="info">ℹ️ Info</button>
+                        <button class="btn btn-secondary filter-btn" data-level="success">✅ Sucesso</button>
+                        <button class="btn btn-secondary filter-btn" data-level="warning">⚠️ Aviso</button>
+                        <button class="btn btn-secondary filter-btn" data-level="error">❌ Erro</button>
+                    </div>
+                    
+                    <div id="logsList" class="logs-list">
+                        <div class="log-item">
+                            <div class="text-center" style="width: 100%; padding: 2rem;">
+                                <div class="loading"></div>
+                                <p class="mt-2 opacity-75">Carregando logs...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class LogsManager {
+            constructor() {
+                this.logs = [];
+                this.currentFilter = 'all';
+                this.init();
+            }
+
+            init() {
+                this.setupFilters();
+                this.loadLogs();
+                this.startAutoRefresh();
+                this.updatePerformanceMetrics();
+            }
+
+            setupFilters() {
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        
+                        const level = btn.getAttribute('data-level');
+                        this.filterLogs(level);
+                    });
+                });
+            }
+
+            async loadLogs() {
+                try {
+                    // Simulação de logs (substitua pela API real)
+                    const logs = this.generateMockLogs();
+                    this.logs = logs;
+                    this.updateStats();
+                    this.renderLogs();
+                } catch (error) {
+                    this.showError('❌ Erro ao carregar logs: ' + error.message);
+                }
+            }
+
+            generateMockLogs() {
+                const levels = ['info', 'success', 'warning', 'error'];
+                const messages = [
+                    'Sistema inicializado com sucesso',
+                    'Conexão com MongoDB estabelecida',
+                    'Usuário autenticado',
+                    'Cache atualizado',
+                    'Backup realizado',
+                    'Erro de conexão com API externa',
+                    'Rate limit atingido',
+                    'Arquivo não encontrado',
+                    'Memória baixa detectada',
+                    'Request processado com sucesso'
+                ];
+
+                const logs = [];
+                for (let i = 0; i < 50; i++) {
+                    const level = levels[Math.floor(Math.random() * levels.length)];
+                    const message = messages[Math.floor(Math.random() * messages.length)];
+                    const timestamp = new Date(Date.now() - Math.random() * 86400000).toISOString();
+                    
+                    logs.push({
+                        level,
+                        message,
+                        timestamp,
+                        id: i
+                    });
+                }
+
+                return logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            }
+
+            updateStats() {
+                const total = this.logs.length;
+                const success = this.logs.filter(log => log.level === 'success').length;
+                const warning = this.logs.filter(log => log.level === 'warning').length;
+                const error = this.logs.filter(log => log.level === 'error').length;
+
+                document.getElementById('totalLogs').textContent = total;
+                document.getElementById('successLogs').textContent = success;
+                document.getElementById('warningLogs').textContent = warning;
+                document.getElementById('errorLogs').textContent = error;
+            }
+
+            renderLogs() {
+                const container = document.getElementById('logsList');
+                
+                if (this.logs.length === 0) {
+                    container.innerHTML = `
+                        <div class="log-item">
+                            <div class="text-center" style="width: 100%;">
+                                <p class="opacity-75">📝 Nenhum log encontrado</p>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const filteredLogs = this.currentFilter === 'all' 
+                    ? this.logs 
+                    : this.logs.filter(log => log.level === this.currentFilter);
+
+                if (filteredLogs.length === 0) {
+                    container.innerHTML = `
+                        <div class="log-item">
+                            <div class="text-center" style="width: 100%;">
+                                <p class="opacity-75">🔍 Nenhum log encontrado neste filtro</p>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = filteredLogs.slice(0, 100).map(log => this.renderLogItem(log)).join('');
+            }
+
+            renderLogItem(log) {
+                const time = new Date(log.timestamp).toLocaleTimeString('pt-BR');
+                const levelClass = `level-${log.level}`;
+                
+                return `
+                    <div class="log-item">
+                        <span class="log-level ${levelClass}">${log.level}</span>
+                        <span class="log-time">${time}</span>
+                        <span class="log-message">${log.message}</span>
+                    </div>
+                `;
+            }
+
+            filterLogs(level) {
+                this.currentFilter = level;
+                this.renderLogs();
+            }
+
+            refreshLogs() {
+                this.loadLogs();
+            }
+
+            refreshAll() {
+                this.refreshLogs();
+                this.updatePerformanceMetrics();
+                this.showMessage('🔄 Dados atualizados com sucesso!', 'success');
+            }
+
+            updatePerformanceMetrics() {
+                // Simular métricas de performance
+                const cpu = Math.floor(Math.random() * 30) + 10;
+                const ram = Math.floor(Math.random() * 40) + 30;
+                const hours = Math.floor(Math.random() * 24);
+                const minutes = Math.floor(Math.random() * 60);
+
+                document.getElementById('cpuUsage').textContent = `${cpu}%`;
+                document.getElementById('ramUsage').textContent = `${ram}%`;
+                document.getElementById('uptime').textContent = `${hours}h ${minutes}m`;
+            }
+
+            startAutoRefresh() {
+                setInterval(() => {
+                    this.loadLogs();
+                    this.updatePerformanceMetrics();
+                }, 30000); // Atualizar a cada 30 segundos
+            }
+
+            showError(message) {
+                const container = document.getElementById('logsList');
+                container.innerHTML = `
+                    <div class="log-item">
+                        <div class="alert alert-error" style="width: 100%; margin: 0;">
+                            <p>${message}</p>
+                            <button class="btn btn-secondary mt-2" onclick="logsManager.refreshLogs()">
+                                🔄 Tentar novamente
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            showMessage(message, type) {
+                // Remover mensagens anteriores
+                document.querySelectorAll('.temp-message').forEach(el => el.remove());
+                
+                const div = document.createElement('div');
+                div.className = `alert alert-${type} temp-message fade-in`;
+                div.innerHTML = `<p>${message}</p>`;
+                
+                const container = document.querySelector('.container');
+                container.insertBefore(div, container.firstElementChild.nextElementSibling);
+                
+                // Remover após 3 segundos
+                setTimeout(() => {
+                    div.style.opacity = '0';
+                    setTimeout(() => div.remove(), 300);
+                }, 3000);
+            }
+        }
+
+        // Inicializar quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', () => {
+            window.logsManager = new LogsManager();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 Admin Dashboard - Matriz</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .admin-dashboard {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 80px);
+            padding: 2rem;
+        }
+
+        .admin-sidebar {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(12px);
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .admin-content {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(12px);
+            min-height: 800px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section h3 {
+            color: #f1f5f9;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-menu a:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu a.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .system-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .status-card {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .status-card.online {
+            border-color: rgba(34, 197, 94, 0.3);
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .status-card.warning {
+            border-color: rgba(245, 158, 11, 0.3);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .status-card.offline {
+            border-color: rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .status-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .status-title {
+            color: #f1f5f9;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .status-value {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-card {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(59, 130, 246, 0.4);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .action-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .action-title {
+            color: #f1f5f9;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .action-description {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .section-title {
+            color: #f1f5f9;
+            font-size: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-action:hover {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(71, 85, 105, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(71, 85, 105, 1);
+            border-color: rgba(148, 163, 184, 0.5);
+        }
+
+        .log-viewer {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 1.5rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: #e2e8f0;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .api-test-form {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .response-area {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            margin-top: 1rem;
+        }
+
+        .tab-navigation {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 12px;
+            padding: 0.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: transparent;
+            color: #94a3b8;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tab-btn.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #3b82f6;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .admin-dashboard {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .admin-sidebar {
+                position: static;
+                order: 2;
+            }
+
+            .admin-content {
+                order: 1;
+                padding: 1.5rem;
+            }
+
+            .system-status {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <span>🧠</span>
+                <span>Matriz Admin</span>
+            </a>
+            <div class="nav-menu">
+                <a href="/">🏠 Home</a>
+                <a href="/dashboard.html">🤖 Dashboard</a>
+                <a href="/admin-dashboard.html" class="active">👑 Admin</a>
+                <a href="/strategic-notes.html">📝 Notas</a>
+                <a href="/logs-dashboard.html">📊 Logs</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="admin-dashboard">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-section">
+                <h3>⚡ Sistema</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#overview" class="menu-link active" data-section="overview">📊 Visão Geral</a></li>
+                    <li><a href="#ai-management" class="menu-link" data-section="ai-management">🤖 Gerenciar IA</a></li>
+                    <li><a href="#obsidian-control" class="menu-link" data-section="obsidian-control">📝 Obsidian</a></li>
+                    <li><a href="#database-admin" class="menu-link" data-section="database-admin">🗄️ Database</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>🔧 Ferramentas</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#api-tester" class="menu-link" data-section="api-tester">🧪 API Tester</a></li>
+                    <li><a href="#backup-manager" class="menu-link" data-section="backup-manager">📦 Backups</a></li>
+                    <li><a href="#logs-viewer" class="menu-link" data-section="logs-viewer">📋 Logs</a></li>
+                    <li><a href="#system-monitor" class="menu-link" data-section="system-monitor">⚙️ Monitor</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>📊 Analytics</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#statistics" class="menu-link" data-section="statistics">📈 Estatísticas</a></li>
+                    <li><a href="#usage-reports" class="menu-link" data-section="usage-reports">📊 Relatórios</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>🚀 Ações Rápidas</h3>
+                <button class="btn-action btn-secondary" onclick="adminManager.restartServices()">
+                    🔄 Reiniciar Serviços
+                </button>
+            </div>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="admin-content">
+            <!-- Visão Geral -->
+            <section id="overview" class="content-section active">
+                <div class="section-header">
+                    <h1 class="section-title">📊 Visão Geral do Sistema</h1>
+                    <button class="btn-action" onclick="adminManager.refreshAll()">
+                        🔄 Atualizar Tudo
+                    </button>
+                </div>
+
+                <!-- Status do Sistema -->
+                <div class="system-status" id="system-status">
+                    <!-- Carregado dinamicamente -->
+                </div>
+
+                <!-- Ações Rápidas -->
+                <h2 style="color: #f1f5f9; margin-bottom: 1rem;">⚡ Ações Rápidas</h2>
+                <div class="quick-actions">
+                    <div class="action-card" onclick="adminManager.openAIChat()">
+                        <span class="action-icon">🤖</span>
+                        <div class="action-title">Testar IA</div>
+                        <div class="action-description">Fazer pergunta à IA e ver integração com Obsidian</div>
+                    </div>
+
+                    <div class="action-card" onclick="adminManager.createBackup()">
+                        <span class="action-icon">📦</span>
+                        <div class="action-title">Backup Manual</div>
+                        <div class="action-description">Criar backup completo dos dados do sistema</div>
+                    </div>
+
+                    <div class="action-card" onclick="adminManager.viewLogs()">
+                        <span class="action-icon">📋</span>
+                        <div class="action-title">Ver Logs</div>
+                        <div class="action-description">Visualizar logs em tempo real do sistema</div>
+                    </div>
+
+                    <div class="action-card" onclick="adminManager.openTerminal()">
+                        <span class="action-icon">💻</span>
+                        <div class="action-title">Terminal CLI</div>
+                        <div class="action-description">Executar comandos através da CLI</div>
+                    </div>
+                </div>
+
+                <!-- Estatísticas Resumidas -->
+                <h2 style="color: #f1f5f9; margin-bottom: 1rem;">📈 Estatísticas Resumidas</h2>
+                <div class="stats-grid" id="overview-stats">
+                    <!-- Carregado dinamicamente -->
+                </div>
+            </section>
+
+            <!-- Gerenciamento de IA -->
+            <section id="ai-management" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">🤖 Gerenciamento de IA</h1>
+                </div>
+
+                <div class="tab-navigation">
+                    <button class="tab-btn active" onclick="adminManager.switchTab('ai-chat', this)">💬 Chat IA</button>
+                    <button class="tab-btn" onclick="adminManager.switchTab('ai-history', this)">📜 Histórico</button>
+                    <button class="tab-btn" onclick="adminManager.switchTab('ai-settings', this)">⚙️ Configurações</button>
+                </div>
+
+                <div id="ai-chat-content" class="tab-content">
+                    <div class="api-test-form">
+                        <h3 style="color: #f1f5f9; margin-bottom: 1rem;">💬 Testar IA</h3>
+                        <form id="ai-test-form">
+                            <div class="form-group">
+                                <label for="ai-prompt">Sua pergunta:</label>
+                                <textarea id="ai-prompt" class="form-control" rows="4" placeholder="Digite sua pergunta aqui..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-action">🤖 Perguntar à IA</button>
+                        </form>
+                        <div id="ai-response" class="response-area" style="display: none;">
+                            <h4 style="color: #f1f5f9;">📝 Resposta:</h4>
+                            <div id="ai-response-content"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ai-history-content" class="tab-content" style="display: none;">
+                    <div id="ai-chain-display">
+                        <!-- Carregado dinamicamente -->
+                    </div>
+                </div>
+
+                <div id="ai-settings-content" class="tab-content" style="display: none;">
+                    <div class="api-test-form">
+                        <h3 style="color: #f1f5f9; margin-bottom: 1rem;">⚙️ Configurações da IA</h3>
+                        <div id="ai-status-display">
+                            <!-- Carregado dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Controle do Obsidian -->
+            <section id="obsidian-control" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">📝 Controle do Obsidian</h1>
+                </div>
+
+                <div class="tab-navigation">
+                    <button class="tab-btn active" onclick="adminManager.switchTab('obsidian-status', this)">📊 Status</button>
+                    <button class="tab-btn" onclick="adminManager.switchTab('obsidian-sync', this)">🔄 Sincronização</button>
+                    <button class="tab-btn" onclick="adminManager.switchTab('obsidian-files', this)">📁 Arquivos</button>
+                </div>
+
+                <div id="obsidian-status-content" class="tab-content">
+                    <div id="obsidian-status-display">
+                        <!-- Carregado dinamicamente -->
+                    </div>
+                </div>
+
+                <div id="obsidian-sync-content" class="tab-content" style="display: none;">
+                    <div class="api-test-form">
+                        <h3 style="color: #f1f5f9; margin-bottom: 1rem;">🔄 Sincronização Manual</h3>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <button class="btn-action" onclick="adminManager.syncAllToObsidian()">📋 Sincronizar Tudo</button>
+                            <button class="btn-action btn-secondary" onclick="adminManager.processSyncQueue()">⚡ Processar Fila</button>
+                            <button class="btn-action btn-secondary" onclick="adminManager.testObsidianConnection()">🧪 Testar Conexão</button>
+                        </div>
+                        <div id="sync-results" class="response-area" style="display: none;">
+                            <!-- Resultados da sincronização -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="obsidian-files-content" class="tab-content" style="display: none;">
+                    <div class="api-test-form">
+                        <h3 style="color: #f1f5f9; margin-bottom: 1rem;">📁 Explorar Arquivos</h3>
+                        <div class="form-group">
+                            <label for="obsidian-directory">Diretório:</label>
+                            <select id="obsidian-directory" class="form-control">
+                                <option value="">Raiz</option>
+                                <option value="AI Responses">AI Responses</option>
+                                <option value="Strategic Notes">Strategic Notes</option>
+                                <option value="Blog Posts">Blog Posts</option>
+                                <option value="Blocks">Blocks</option>
+                            </select>
+                        </div>
+                        <button class="btn-action" onclick="adminManager.listObsidianFiles()">📂 Listar Arquivos</button>
+                        <div id="obsidian-files-list" class="response-area" style="display: none;">
+                            <!-- Lista de arquivos -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- API Tester -->
+            <section id="api-tester" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">🧪 Testador de API</h1>
+                </div>
+
+                <div class="api-test-form">
+                    <h3 style="color: #f1f5f9; margin-bottom: 1rem;">🌐 Teste Manual de Endpoints</h3>
+                    <form id="api-test-form-manual">
+                        <div class="form-group">
+                            <label for="api-method">Método:</label>
+                            <select id="api-method" class="form-control">
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="DELETE">DELETE</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="api-endpoint">Endpoint:</label>
+                            <input type="text" id="api-endpoint" class="form-control" placeholder="/api/status" value="/api/status">
+                        </div>
+                        <div class="form-group">
+                            <label for="api-body">Body (JSON):</label>
+                            <textarea id="api-body" class="form-control" rows="4" placeholder='{"key": "value"}'></textarea>
+                        </div>
+                        <button type="submit" class="btn-action">🚀 Executar Teste</button>
+                    </form>
+                    <div id="api-test-response" class="response-area" style="display: none;">
+                        <h4 style="color: #f1f5f9;">📋 Resposta:</h4>
+                        <pre id="api-response-content"></pre>
+                    </div>
+                </div>
+
+                <!-- Testes Pré-definidos -->
+                <div class="api-test-form">
+                    <h3 style="color: #f1f5f9; margin-bottom: 1rem;">⚡ Testes Rápidos</h3>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button class="btn-action btn-secondary" onclick="adminManager.quickTest('/api/status')">📊 Status</button>
+                        <button class="btn-action btn-secondary" onclick="adminManager.quickTest('/api/ai/status')">🤖 IA Status</button>
+                        <button class="btn-action btn-secondary" onclick="adminManager.quickTest('/api/obsidian/status')">📝 Obsidian</button>
+                        <button class="btn-action btn-secondary" onclick="adminManager.quickTest('/api/backup/status')">📦 Backup</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Monitor do Sistema -->
+            <section id="system-monitor" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">⚙️ Monitor do Sistema</h1>
+                </div>
+
+                <div class="stats-grid" id="system-monitor-stats">
+                    <!-- Carregado dinamicamente -->
+                </div>
+
+                <div class="api-test-form">
+                    <h3 style="color: #f1f5f9; margin-bottom: 1rem;">📊 Informações do Sistema</h3>
+                    <div id="system-info-display">
+                        <!-- Carregado dinamicamente -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Visualizador de Logs -->
+            <section id="logs-viewer" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">📋 Visualizador de Logs</h1>
+                    <button class="btn-action" onclick="adminManager.refreshLogs()">🔄 Atualizar</button>
+                </div>
+
+                <div class="tab-navigation">
+                    <button class="tab-btn active" onclick="adminManager.switchTab('logs-live', this)">🔴 Live</button>
+                    <button class="tab-btn" onclick="adminManager.switchTab('logs-errors', this)">❌ Erros</button>
+                    <button class="tab-btn" onclick="adminManager.switchTab('logs-info', this)">ℹ️ Info</button>
+                </div>
+
+                <div id="logs-live-content" class="tab-content">
+                    <div class="log-viewer" id="live-logs">
+                        Carregando logs em tempo real...
+                    </div>
+                </div>
+
+                <div id="logs-errors-content" class="tab-content" style="display: none;">
+                    <div class="log-viewer" id="error-logs">
+                        Carregando logs de erro...
+                    </div>
+                </div>
+
+                <div id="logs-info-content" class="tab-content" style="display: none;">
+                    <div class="log-viewer" id="info-logs">
+                        Carregando logs informativos...
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gerenciador de Backup -->
+            <section id="backup-manager" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">📦 Gerenciador de Backup</h1>
+                </div>
+
+                <div class="api-test-form">
+                    <h3 style="color: #f1f5f9; margin-bottom: 1rem;">💾 Criar Backup</h3>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button class="btn-action" onclick="adminManager.createManualBackup()">📦 Backup Completo</button>
+                        <button class="btn-action btn-secondary" onclick="adminManager.backupDatabase()">🗄️ Backup Database</button>
+                        <button class="btn-action btn-secondary" onclick="adminManager.backupBlockchain()">🔗 Backup Blockchain</button>
+                    </div>
+                    <div id="backup-results" class="response-area" style="display: none;">
+                        <!-- Resultados do backup -->
+                    </div>
+                </div>
+
+                <div class="api-test-form">
+                    <h3 style="color: #f1f5f9; margin-bottom: 1rem;">📋 Status de Backup</h3>
+                    <div id="backup-status-display">
+                        <!-- Carregado dinamicamente -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Estatísticas -->
+            <section id="statistics" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">📈 Estatísticas Detalhadas</h1>
+                </div>
+
+                <div id="detailed-stats">
+                    <!-- Carregado dinamicamente -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Notificação -->
+    <div id="notification" class="notification">
+        <span id="notification-text"></span>
+    </div>
+
+    <script>
+        class AdminManager {
+            constructor() {
+                this.initializeEventListeners();
+                this.loadInitialData();
+                this.startAutoRefresh();
+            }
+
+            initializeEventListeners() {
+                // Menu de navegação
+                document.querySelectorAll('.menu-link').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.switchSection(e.target.dataset.section, e.target);
+                    });
+                });
+
+                // Formulário de teste de IA
+                document.getElementById('ai-test-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.testAI();
+                });
+
+                // Formulário de teste de API
+                document.getElementById('api-test-form-manual').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.testAPIManual();
+                });
+            }
+
+            switchSection(sectionId, activeLink) {
+                // Esconder todas as seções
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+
+                // Mostrar seção ativa
+                document.getElementById(sectionId).classList.add('active');
+
+                // Atualizar menu ativo
+                document.querySelectorAll('.menu-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                activeLink.classList.add('active');
+
+                // Carregar dados específicos da seção
+                this.loadSectionData(sectionId);
+            }
+
+            switchTab(tabId, activeBtn) {
+                // Esconder todos os conteúdos de tab
+                const parentSection = activeBtn.closest('.content-section');
+                parentSection.querySelectorAll('.tab-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+
+                // Mostrar conteúdo ativo
+                document.getElementById(tabId + '-content').style.display = 'block';
+
+                // Atualizar botão ativo
+                parentSection.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                activeBtn.classList.add('active');
+            }
+
+            async loadInitialData() {
+                await this.loadSystemStatus();
+                await this.loadOverviewStats();
+            }
+
+            async loadSectionData(sectionId) {
+                switch(sectionId) {
+                    case 'overview':
+                        await this.loadSystemStatus();
+                        await this.loadOverviewStats();
+                        break;
+                    case 'ai-management':
+                        await this.loadAIStatus();
+                        await this.loadAIHistory();
+                        break;
+                    case 'obsidian-control':
+                        await this.loadObsidianStatus();
+                        break;
+                    case 'system-monitor':
+                        await this.loadSystemMonitor();
+                        break;
+                    case 'backup-manager':
+                        await this.loadBackupStatus();
+                        break;
+                    case 'statistics':
+                        await this.loadDetailedStats();
+                        break;
+                }
+            }
+
+            async loadSystemStatus() {
+                try {
+                    const responses = await Promise.all([
+                        fetch('/api/status'),
+                        fetch('/api/ai/status'),
+                        fetch('/api/obsidian/status'),
+                        fetch('/api/backup/status')
+                    ]);
+
+                    const [systemStatus, aiStatus, obsidianStatus, backupStatus] = 
+                        await Promise.all(responses.map(r => r.json()));
+
+                    const statusContainer = document.getElementById('system-status');
+                    statusContainer.innerHTML = `
+                        <div class="status-card ${systemStatus.ok ? 'online' : 'offline'}">
+                            <span class="status-icon">${systemStatus.ok ? '✅' : '❌'}</span>
+                            <div class="status-title">Sistema Principal</div>
+                            <div class="status-value">${systemStatus.ok ? 'Online' : 'Offline'}</div>
+                        </div>
+                        <div class="status-card ${aiStatus.status === 'connected' ? 'online' : 'warning'}">
+                            <span class="status-icon">🤖</span>
+                            <div class="status-title">IA (${aiStatus.model})</div>
+                            <div class="status-value">${aiStatus.status}</div>
+                        </div>
+                        <div class="status-card ${obsidianStatus.data.isConnected ? 'online' : 'warning'}">
+                            <span class="status-icon">📝</span>
+                            <div class="status-title">Obsidian</div>
+                            <div class="status-value">${obsidianStatus.data.isConnected ? 'Conectado' : 'Modo Fallback'}</div>
+                        </div>
+                        <div class="status-card ${systemStatus.mongodb === 'connected' ? 'online' : 'warning'}">
+                            <span class="status-icon">🗄️</span>
+                            <div class="status-title">MongoDB</div>
+                            <div class="status-value">${systemStatus.mongodb === 'connected' ? 'Conectado' : 'Modo Mock'}</div>
+                        </div>
+                        <div class="status-card ${backupStatus.success ? 'online' : 'warning'}">
+                            <span class="status-icon">📦</span>
+                            <div class="status-title">Backup</div>
+                            <div class="status-value">${backupStatus.data?.running ? 'Ativo' : 'Parado'}</div>
+                        </div>
+                    `;
+                } catch (error) {
+                    this.showNotification('Erro ao carregar status do sistema', 'error');
+                }
+            }
+
+            async loadOverviewStats() {
+                try {
+                    const response = await fetch('/api/ai/chain');
+                    const data = await response.json();
+
+                    if (data.success) {
+                        const statsContainer = document.getElementById('overview-stats');
+                        statsContainer.innerHTML = `
+                            <div class="stat-card">
+                                <span class="stat-number">${data.stats.totalBlocks}</span>
+                                <div class="stat-label">Blocos IA</div>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number">${data.stats.totalUsers}</span>
+                                <div class="stat-label">Usuários</div>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number">${Math.round(data.stats.averageResponseLength)}</span>
+                                <div class="stat-label">Chars Médio</div>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number">${Object.keys(data.stats.aiModeBreakdown).length}</span>
+                                <div class="stat-label">Modos IA</div>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar estatísticas:', error);
+                }
+            }
+
+            async testAI() {
+                const prompt = document.getElementById('ai-prompt').value;
+                const responseDiv = document.getElementById('ai-response');
+                const contentDiv = document.getElementById('ai-response-content');
+
+                try {
+                    const response = await fetch('/api/ai/ask', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer admin-token'
+                        },
+                        body: JSON.stringify({ prompt })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        contentDiv.innerHTML = `
+                            <div style="background: rgba(15, 23, 42, 0.8); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                                <strong style="color: #60a5fa;">Pergunta:</strong> ${prompt}
+                            </div>
+                            <div style="background: rgba(34, 197, 94, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid rgba(34, 197, 94, 0.3);">
+                                <strong style="color: #4ade80;">Resposta:</strong><br>
+                                ${typeof marked !== 'undefined' ? marked.parse(data.answer) : data.answer.replace(/\n/g, '<br>')}
+                            </div>
+                            <div style="margin-top: 1rem; font-size: 0.85rem; color: #94a3b8;">
+                                <strong>Hash:</strong> ${data.hash}<br>
+                                <strong>Modo IA:</strong> ${data.aiMode}<br>
+                                <strong>Obsidian:</strong> ${data.obsidian ? 'Sincronizado' : 'Fallback local'}
+                            </div>
+                        `;
+                        responseDiv.style.display = 'block';
+                        document.getElementById('ai-prompt').value = '';
+                        this.showNotification('Pergunta processada com sucesso!', 'success');
+                    } else {
+                        throw new Error(data.message || 'Erro na resposta');
+                    }
+                } catch (error) {
+                    this.showNotification('Erro ao processar pergunta: ' + error.message, 'error');
+                }
+            }
+
+            async testAPIManual() {
+                const method = document.getElementById('api-method').value;
+                const endpoint = document.getElementById('api-endpoint').value;
+                const body = document.getElementById('api-body').value;
+                const responseDiv = document.getElementById('api-test-response');
+                const contentDiv = document.getElementById('api-response-content');
+
+                try {
+                    const options = {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    };
+
+                    if (body && (method === 'POST' || method === 'PUT')) {
+                        options.body = body;
+                    }
+
+                    const response = await fetch(endpoint, options);
+                    const data = await response.json();
+
+                    contentDiv.textContent = JSON.stringify(data, null, 2);
+                    responseDiv.style.display = 'block';
+                    
+                    this.showNotification(`${method} ${endpoint} - Status: ${response.status}`, 
+                        response.ok ? 'success' : 'error');
+                } catch (error) {
+                    contentDiv.textContent = 'Erro: ' + error.message;
+                    responseDiv.style.display = 'block';
+                    this.showNotification('Erro na requisição: ' + error.message, 'error');
+                }
+            }
+
+            async quickTest(endpoint) {
+                try {
+                    const response = await fetch(endpoint);
+                    const data = await response.json();
+                    
+                    this.showNotification(
+                        `${endpoint} - Status: ${response.status} - ${data.message || 'OK'}`, 
+                        response.ok ? 'success' : 'error'
+                    );
+                } catch (error) {
+                    this.showNotification(`Erro em ${endpoint}: ${error.message}`, 'error');
+                }
+            }
+
+            async loadAIStatus() {
+                try {
+                    const response = await fetch('/api/ai/status');
+                    const data = await response.json();
+                    
+                    document.getElementById('ai-status-display').innerHTML = `
+                        <div style="background: rgba(15, 23, 42, 0.8); padding: 1.5rem; border-radius: 10px;">
+                            <h4 style="color: #f1f5f9; margin-bottom: 1rem;">🤖 Status da IA</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                <div>
+                                    <strong style="color: #94a3b8;">Status:</strong><br>
+                                    <span style="color: ${data.status === 'connected' ? '#4ade80' : '#fbbf24'};">${data.status}</span>
+                                </div>
+                                <div>
+                                    <strong style="color: #94a3b8;">Modelo:</strong><br>
+                                    <span style="color: #e2e8f0;">${data.model}</span>
+                                </div>
+                                <div>
+                                    <strong style="color: #94a3b8;">Modo:</strong><br>
+                                    <span style="color: #e2e8f0;">${data.mode}</span>
+                                </div>
+                                <div>
+                                    <strong style="color: #94a3b8;">Provider:</strong><br>
+                                    <span style="color: #e2e8f0;">${data.provider}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } catch (error) {
+                    this.showNotification('Erro ao carregar status da IA', 'error');
+                }
+            }
+
+            async loadObsidianStatus() {
+                try {
+                    const response = await fetch('/api/obsidian/status');
+                    const data = await response.json();
+                    
+                    document.getElementById('obsidian-status-display').innerHTML = `
+                        <div style="background: rgba(15, 23, 42, 0.8); padding: 1.5rem; border-radius: 10px; margin-bottom: 1rem;">
+                            <h4 style="color: #f1f5f9; margin-bottom: 1rem;">📝 Status do Obsidian</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                <div>
+                                    <strong style="color: #94a3b8;">Conectado:</strong><br>
+                                    <span style="color: ${data.data.isConnected ? '#4ade80' : '#fbbf24'};">
+                                        ${data.data.isConnected ? 'Sim' : 'Não'}
+                                    </span>
+                                </div>
+                                <div>
+                                    <strong style="color: #94a3b8;">Modo Fallback:</strong><br>
+                                    <span style="color: ${data.data.fallbackMode ? '#fbbf24' : '#4ade80'};">
+                                        ${data.data.fallbackMode ? 'Ativo' : 'Inativo'}
+                                    </span>
+                                </div>
+                                <div>
+                                    <strong style="color: #94a3b8;">Fila:</strong><br>
+                                    <span style="color: #e2e8f0;">${data.data.syncQueueLength} itens</span>
+                                </div>
+                                <div>
+                                    <strong style="color: #94a3b8;">Sincronizando:</strong><br>
+                                    <span style="color: ${data.data.isSyncing ? '#fbbf24' : '#4ade80'};">
+                                        ${data.data.isSyncing ? 'Sim' : 'Não'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(148, 163, 184, 0.2);">
+                                <strong style="color: #94a3b8;">URL Base:</strong> ${data.data.config.baseUrl}<br>
+                                <strong style="color: #94a3b8;">Pasta Local:</strong> ${data.data.localSyncPath}
+                            </div>
+                        </div>
+                    `;
+                } catch (error) {
+                    this.showNotification('Erro ao carregar status do Obsidian', 'error');
+                }
+            }
+
+            async syncAllToObsidian() {
+                try {
+                    const response = await fetch('/api/obsidian/sync/all', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ force: true })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    document.getElementById('sync-results').innerHTML = `
+                        <h4 style="color: #f1f5f9;">📊 Resultados da Sincronização</h4>
+                        <div style="margin: 1rem 0;">
+                            <strong style="color: #4ade80;">Sucessos:</strong> ${data.data.summary.success}<br>
+                            <strong style="color: #ef4444;">Erros:</strong> ${data.data.summary.errors}<br>
+                            <strong style="color: #94a3b8;">Total:</strong> ${data.data.summary.total}
+                        </div>
+                        <pre style="background: rgba(0,0,0,0.8); padding: 1rem; border-radius: 8px; overflow-x: auto;">
+${JSON.stringify(data.data.results, null, 2)}
+                        </pre>
+                    `;
+                    document.getElementById('sync-results').style.display = 'block';
+                    
+                    this.showNotification(`Sincronização completa: ${data.data.summary.success} sucessos`, 'success');
+                } catch (error) {
+                    this.showNotification('Erro na sincronização: ' + error.message, 'error');
+                }
+            }
+
+            async createManualBackup() {
+                try {
+                    const response = await fetch('/api/backup/create', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.showNotification('Backup criado com sucesso!', 'success');
+                        await this.loadBackupStatus();
+                    } else {
+                        throw new Error(data.message);
+                    }
+                } catch (error) {
+                    this.showNotification('Erro ao criar backup: ' + error.message, 'error');
+                }
+            }
+
+            async loadBackupStatus() {
+                try {
+                    const response = await fetch('/api/backup/status');
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        document.getElementById('backup-status-display').innerHTML = `
+                            <div style="background: rgba(15, 23, 42, 0.8); padding: 1.5rem; border-radius: 10px;">
+                                <h4 style="color: #f1f5f9; margin-bottom: 1rem;">📦 Status do Backup</h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                    <div>
+                                        <strong style="color: #94a3b8;">Status:</strong><br>
+                                        <span style="color: ${data.data.running ? '#4ade80' : '#fbbf24'};">
+                                            ${data.data.running ? 'Ativo' : 'Inativo'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong style="color: #94a3b8;">Total de Backups:</strong><br>
+                                        <span style="color: #e2e8f0;">${data.data.totalBackups || 0}</span>
+                                    </div>
+                                    <div>
+                                        <strong style="color: #94a3b8;">Último Backup:</strong><br>
+                                        <span style="color: #e2e8f0;">${data.data.lastBackup || 'Nunca'}</span>
+                                    </div>
+                                    <div>
+                                        <strong style="color: #94a3b8;">Intervalo:</strong><br>
+                                        <span style="color: #e2e8f0;">${data.data.intervalHours || 24}h</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    this.showNotification('Erro ao carregar status do backup', 'error');
+                }
+            }
+
+            openAIChat() {
+                this.switchSection('ai-management', document.querySelector('[data-section="ai-management"]'));
+            }
+
+            createBackup() {
+                this.createManualBackup();
+            }
+
+            viewLogs() {
+                this.switchSection('logs-viewer', document.querySelector('[data-section="logs-viewer"]'));
+            }
+
+            openTerminal() {
+                // Abrir em nova aba ou mostrar instruções
+                this.showNotification('Use: python3 matriz-cli.py no terminal', 'warning');
+            }
+
+            async refreshAll() {
+                await this.loadInitialData();
+                this.showNotification('Dados atualizados!', 'success');
+            }
+
+            startAutoRefresh() {
+                // Atualizar status a cada 30 segundos
+                setInterval(() => {
+                    if (document.querySelector('.content-section.active').id === 'overview') {
+                        this.loadSystemStatus();
+                    }
+                }, 30000);
+            }
+
+            showNotification(message, type = 'success') {
+                const notification = document.getElementById('notification');
+                const text = document.getElementById('notification-text');
+                
+                text.textContent = message;
+                notification.className = `notification ${type}`;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 4000);
+            }
+        }
+
+        // Inicializar quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', () => {
+            window.adminManager = new AdminManager();
+        });
+    </script>
+</body>
+</html>
