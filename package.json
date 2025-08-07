@@ -17,7 +17,12 @@
     "backup:create": "node scripts/backup-database.js create",
     "backup:list": "node scripts/backup-database.js list",
     "backup:restore": "node scripts/restore-database.js restore",
-    "backup:verify": "node scripts/restore-database.js verify"
+    "backup:verify": "node scripts/restore-database.js verify",
+    "system:backup": "node scripts/complete-system-backup.js create",
+    "system:list": "node scripts/complete-system-backup.js list",
+    "system:verify": "node scripts/complete-system-backup.js verify",
+    "github:backup": "node scripts/github-backup.js push",
+    "github:sync": "node scripts/github-backup.js sync"
   },
   "keywords": [
     "matriz",
