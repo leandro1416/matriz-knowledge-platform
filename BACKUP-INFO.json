@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-01-27T20:45:00.000Z",
+  "backupType": "github-sync",
+  "version": "1.0.0",
+  "platform": "darwin",
+  "nodeVersion": "v18.17.0",
+  "projectVersion": "1.0.0",
+  "branch": "main",
+  "lastSync": "2025-01-27T20:45:00.000Z",
+  "repository": "https://github.com/leandro1416/matriz-knowledge-platform.git",
+  "description": "Backup completo do sistema Matriz Knowledge Platform",
+  "components": [
+    "Código fonte completo",
+    "Configurações da aplicação",
+    "Scripts de manutenção",
+    "Documentação",
+    "Estrutura de dados",
+    "Integração Obsidian"
+  ],
+  "instructions": {
+    "clone": "git clone https://github.com/leandro1416/matriz-knowledge-platform.git",
+    "setup": "npm install && npm run setup",
+    "start": "npm start",
+    "development": "npm run dev"
+  }
+}
